@@ -39,8 +39,7 @@ machine.freq(200000000)
 
 # set up wifi
 wifi_connected = False
-
-indicator_enabled = True # puts a green dot in pixel 1 if wifi connected
+indicator_enabled = False  
 
 # enable wifi
 def connect_wifi():
@@ -108,12 +107,25 @@ def get_payload():
     return payload
 
 # Handle keypresses
-# TODO something useful
+# For now, a simple selfie light for use when developing / zoom calls
 def handle_keypresses():
+    # warm white
     if galactic.is_pressed(GalacticUnicorn.SWITCH_A):
-        indicator_enabled = True
-    else:
-        indicator_enabled = False
+        draw_background("",255,200,128,"")
+        galactic.update(graphics)
+        time.sleep_ms(500)
+        while not galactic.is_pressed(GalacticUnicorn.SWITCH_A):
+            time.sleep_ms(200)
+        time.sleep_ms(200)
+    # black
+    if galactic.is_pressed(GalacticUnicorn.SWITCH_B):
+        draw_background("",0,0,0,"")
+        galactic.update(graphics)
+        time.sleep_ms(500)
+        while not galactic.is_pressed(GalacticUnicorn.SWITCH_B):
+            time.sleep_ms(200)
+        time.sleep_ms(200)
+    
 
 # Settings and messages
 
@@ -160,11 +172,12 @@ def draw_background(background_type, background_r, background_g, background_b, b
         return
     switch(background_type)
 
-    # set the indicator led
-    if indicator_enabled:
-        if check_connection():
-            graphics.set_pen(graphics.create_pen(0, 25, 0))
-        graphics.pixel(0, 0)
+    # set the indicator led to show when wifi is connected
+    # for future persistent connection version
+    #if indicator_enabled:
+    #    if check_connection():
+    #        graphics.set_pen(graphics.create_pen(0, 25, 0))
+    #    graphics.pixel(0, 0)
 
 # Clear background
 def clear():
