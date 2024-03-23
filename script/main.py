@@ -94,16 +94,41 @@ def load_json():
             response.close()
     return False
 
+def save_payload(payload):
+    try:
+        with open("/cache.json", "w") as f:
+            s = ujson.dumps(payload)
+            f.write(s)
+            f.close()
+    except ValueError as e:
+        log(e,"FILE/saveerror")
+
+
+def load_payload():
+    try:
+        with open("/cache.json", "r") as f:
+            payload = ujson.load(f)
+            f.close
+            return payload
+    except ValueError as e:
+        log(e,"FILE/loaderror")
+
 def get_payload():
-    connect_wifi()
-    payload = load_json()
-    # todo - check payload has settings and messages
-    # todo - check payload is for correct board ID
+    payload = False
+    if not galactic.is_pressed(GalacticUnicorn.SWITCH_D):
+        connect_wifi()
+        payload = load_json()
+        disconnect_wifi()
+        if payload == False:
+            payload = load_payload()
+        else:
+            save_payload(payload)
+        # todo - check payload has settings and messages
+        # todo - check payload is for correct board ID
     if payload == False:
         import payload as default
         payload = default.payload
-        log("Loaded","Payload/Defaults")
-    disconnect_wifi()
+        log("Loaded","Payload/Defaults")    
     return payload
 
 # Handle keypresses
